@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartAttend — AI Attendance System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo">
+        Smart<span>Attend</span>
+        <span style="color: var(--muted); font-size: 0.7rem; font-weight: 400"
+          >AI</span
+        >
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" onclick="showPage('dashboard')">
+          📊 Dashboard
+        </button>
+        <button class="nav-btn" onclick="showPage('register')">
+          📝 Register
+        </button>
+        <button class="nav-btn" onclick="showPage('attendance')">
+          📷 Attendance
+        </button>
+        <button class="nav-btn" onclick="showPage('ai')">🤖 AI Insights</button>
+        <button class="nav-btn" onclick="downloadAttendance()">
+  ⬇ Download Attendance
+</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <!-- ===== DASHBOARD PAGE ===== -->
+      <div id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+          <p id="dash-date">Loading...</p>
+        </div>
+
+        <div class="grid-4" id="stat-cards">
+          <div class="stat-card" style="--accent-color: var(--accent)">
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-sub">Registered</div>
+          </div>
+          <div class="stat-card" style="--accent-color: #00e5a0">
+            <div class="stat-label">Present Today</div>
+            <div class="stat-value" id="stat-present">—</div>
+            <div class="stat-sub">Face verified</div>
+          </div>
+          <div class="stat-card" style="--accent-color: var(--danger)">
+            <div class="stat-label">Rejected</div>
+            <div class="stat-value" id="stat-rejected">—</div>
+            <div class="stat-sub">Mismatch today</div>
+          </div>
+          <div class="stat-card" style="--accent-color: var(--warn)">
+            <div class="stat-label">Absent</div>
+            <div class="stat-value" id="stat-absent">—</div>
+            <div class="stat-sub">Not marked</div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Today's Attendance</div>
+            <div class="loading-bar" id="dash-load"></div>
+            <div class="table-wrap">
+              <table id="dash-table">
+                <thead>
+                  <tr>
+                    <th>Roll</th>
+                    <th>Name</th>
+                    <th>Dept</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-tbody">
+                  <tr>
+                    <td
+                      colspan="5"
+                      style="
+                        text-align: center;
+                        color: var(--muted);
+                        padding: 2rem;
+                      "
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">⚠️ Low Attendance Alert (&lt;75%)</div>
+            <div id="low-att-list"><p class="text-muted">Loading...</p></div>
+            <div class="sep"></div>
+            <div class="card-title">📈 7-Day Trend</div>
+            <div class="mini-chart" id="trend-chart"></div>
+            <div
+              class="flex gap-2 mt-1"
+              style="font-size: 0.72rem; color: var(--muted)"
+            >
+              <span style="display: flex; align-items: center; gap: 4px"
+                ><span
+                  style="
+                    width: 10px;
+                    height: 10px;
+                    background: var(--accent);
+                    border-radius: 2px;
+                    display: inline-block;
+                  "
+                ></span
+                >Present</span
+              >
+              <span style="display: flex; align-items: center; gap: 4px"
+                ><span
+                  style="
+                    width: 10px;
+                    height: 10px;
+                    background: var(--danger);
+                    border-radius: 2px;
+                    display: inline-block;
+                  "
+                ></span
+                >Rejected</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REGISTER PAGE ===== -->
+<div id="page-register" class="page">
+  <div class="page-header">
+    <h1>Student Registration</h1>
+    <p>Register new students with face image for AI-powered attendance</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Register New Student</div>
+
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="reg-name" placeholder="e.g. Aryan Sharma" />
+      </div>
+
+      <div class="form-group">
+        <label>Roll Number *</label>
+        <input
+          type="text"
+          id="reg-roll"
+          placeholder="e.g. CS2024001"
+          style="text-transform: uppercase"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Department *</label>
+        <select id="reg-dept">
+          <option value="">Select Department</option>
+          <option>Computer Science</option>
+          <option>Electronics</option>
+          <option>Mechanical</option>
+          <option>Civil</option>
+          <option>Information Technology</option>
+          <option>Electrical</option>
+        </select>
+      </div>
+
+      <!-- 🔥 UPDATED PHOTO SECTION -->
+      <div class="form-group">
+        <label>Clear Face Photo *</label>
+
+        <!-- Upload -->
+        <input
+          type="file"
+          id="reg-img"
+          accept="image/*"
+          onchange="previewImage(this)"
+        />
+
+        <!-- Camera Button -->
+        <div style="margin-top:10px;">
+          <button type="button" class="btn btn-secondary" onclick="startRegisterCamera()">
+            📷 Use Camera
+          </button>
+        </div>
+
+        <!-- Camera Preview -->
+        <video
+          id="reg-video"
+          autoplay
+          playsinline
+          style="width:100%; margin-top:10px; display:none; border-radius:10px;"
+        ></video>
+
+        <!-- Capture Button -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="capture-btn"
+          onclick="captureRegisterPhoto()"
+          style="display:none; margin-top:10px;"
+        >
+          📸 Capture Photo
+        </button>
+
+        <!-- Preview -->
+        <img id="img-preview" alt="Preview" />
+      </div>
+
+      <button
+        class="btn btn-primary btn-block"
+        id="reg-btn"
+        onclick="registerStudent()"
+      >
+        <span>Register Student</span>
+      </button>
+
+      <div class="alert" id="reg-alert"></div>
+    </div>
+
+    <!-- RIGHT SIDE (UNCHANGED) -->
+    <div class="card">
+      <div class="card-title">Registered Students</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Roll</th>
+              <th>Name</th>
+              <th>Dept</th>
+              <th>Registered</th>
+            </tr>
+          </thead>
+          <tbody id="students-tbody">
+            <tr>
+              <td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">
+                Loading...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+      <!-- ===== ATTENDANCE PAGE ===== -->
+      <div id="page-attendance" class="page">
+        <div class="page-header">
+          <h1>Face Attendance</h1>
+          <p>Enter roll number → verify face → mark attendance</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Step 1 — Student Lookup</div>
+            <div class="form-group">
+              <label>Roll Number</label>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="att-roll"
+                  placeholder="Enter roll number"
+                  style="text-transform: uppercase"
+                />
+                <button class="btn btn-secondary" onclick="lookupStudent()">
+                  Lookup
+                </button>
+              </div>
+            </div>
+
+            <div class="student-preview" id="student-preview">
+              <img id="student-thumb" class="student-thumb" alt="Student" />
+              <div class="student-info">
+                <h3 id="preview-name">—</h3>
+                <p id="preview-roll">—</p>
+                <p id="preview-dept">—</p>
+              </div>
+            </div>
+
+            <div class="alert" id="lookup-alert"></div>
+
+            <div class="sep"></div>
+
+            <div class="card-title">Step 2 — Camera & Face Verify</div>
+            <div class="model-status">
+              <div class="dot" id="model-dot"></div>
+              <span id="model-label">Loading face recognition models...</span>
+            </div>
+
+            <div id="video-container">
+              <video id="webcam" autoplay muted playsinline></video>
+              <canvas id="overlay-canvas"></canvas>
+              <div class="webcam-placeholder" id="cam-placeholder">
+                <div class="cam-icon">📷</div>
+                <span>Camera not started</span>
+              </div>
+              <div id="face-status"></div>
+            </div>
+
+            <div class="flex gap-2 mt-2">
+              <button
+                class="btn btn-secondary"
+                id="cam-btn"
+                onclick="startCamera()"
+                style="flex: 1"
+              >
+                ▶ Start Camera
+              </button>
+              <button
+                class="btn btn-primary"
+                id="verify-btn"
+                onclick="captureAndVerify()"
+                style="flex: 1"
+                disabled
+              >
+                📸 Capture & Verify
+              </button>
+            </div>
+
+            <div class="alert" id="att-alert"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📋 Today's Records</div>
+            <div class="loading-bar" id="att-load"></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Roll</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                  </tr>
+                </thead>
+                <tbody id="att-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== AI INSIGHTS PAGE ===== -->
+      <div id="page-ai" class="page">
+        <div class="page-header">
+          <h1>🤖 AI Insights</h1>
+          <p>
+            AI analyzes attendance patterns and provides smart
+            recommendations
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem">
+          <div class="card-title">Configure AI Analysis</div>
+          <p class="text-muted" style="margin-bottom: 0.5rem">
+            Uses
+            <strong style="color: var(--accent)"
+              >Google Gemini 2.5 Flash</strong
+            >
+            — completely free. Get your key at
+            <a
+              href="https://aistudio.google.com/app/apikey"
+              target="_blank"
+              style="color: #8b9cf8"
+              >aistudio.google.com</a
+            >
+          </p>
+          <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.78rem">
+            Free tier: 15 requests/min, 1500 req/day. No credit card needed.
+          </p>
+        
+           <div class="api-key-row">
+  <button class="btn btn-ai" id="ai-btn" onclick="runAIAnalysis()">
+  🤖 Analyze Attendance
+</button>
+</div>
+          <div class="alert" id="ai-alert"></div>
+          <div class="loading-bar" id="ai-load"></div>
+        </div>
+
+        <div id="ai-results" style="display: none">
+          <!-- Summary -->
+          <div class="ai-card">
+            <h3>📋 Summary</h3>
+            <div
+              id="ai-summary"
+              style="font-size: 0.9rem; line-height: 1.7; color: var(--text)"
+            ></div>
+            <div class="flex gap-2 mt-2 items-center">
+              <span class="text-muted" style="font-size: 0.8rem"
+                >Overall Attendance:</span
+              >
+              <span id="ai-overall" class="badge badge-present"></span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Low Attendance -->
+            <div class="ai-card">
+              <h3>⚠️ Low Attendance Students</h3>
+              <div id="ai-low-att"></div>
+            </div>
+
+            <!-- Risk Predictions -->
+            <div class="ai-card">
+              <h3>🔮 Risk Predictions</h3>
+              <div id="ai-risks"></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- Suspicious Activity -->
+            <div class="ai-card">
+              <h3>🚨 Suspicious Activity</h3>
+              <div id="ai-suspicious"></div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="ai-card">
+              <h3>💡 Recommendations</h3>
+              <div id="ai-recommendations"></div>
+            </div>
+          </div>
+
+          <!-- Department Analysis -->
+          <div class="ai-card">
+            <h3>🏛️ Department Analysis</h3>
+            <div id="ai-depts" class="grid-3" style="gap: 0.5rem"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- face-api.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="script.js"></script>
+  </body>
+</html>
