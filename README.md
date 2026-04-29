@@ -6,7 +6,7 @@ A full-stack college attendance system with face recognition, AI analytics, and 
 - **Frontend**: HTML5, CSS3, JavaScript, face-api.js
 - **Backend**: PHP 7.4+
 - **Database**: MySQL 5.7+
-- **AI**: Claude API (claude-sonnet-4-20250514) + face-api.js (TinyFaceDetector)
+- **AI**: Gemini API+ face-api.js (TinyFaceDetector)
 
 ---
 
